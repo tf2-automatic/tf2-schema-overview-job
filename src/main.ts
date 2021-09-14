@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Quality } from './schema/interfaces/quality.interface';
+import { AppService } from './app.service';
 import { SchemaService } from './schema/schema.service';
 
 async function bootstrap() {
@@ -10,6 +10,7 @@ async function bootstrap() {
 
   const logger = new Logger();
 
+  const appService = app.get(AppService);
   const schemaService = app.get(SchemaService);
 
   logger.log('Getting schema overview... ');
@@ -21,18 +22,15 @@ async function bootstrap() {
     throw new Error(result.note);
   }
 
-  const qualities: Quality[] = [];
+  const qualities = appService.getQualities(result);
+  const effects = appService.getEffects(result);
 
-  for (const internal in result.qualityNames) {
-    const name = result.qualityNames[internal];
-    const id = result.qualities[internal];
+  logger.log('Saving overview...');
 
-    qualities.push({ id, name });
-  }
-
-  logger.log('Saving qualities...');
-
-  await schemaService.saveQualities(qualities);
+  await Promise.all([
+    schemaService.saveQualities(qualities),
+    schemaService.saveEffects(effects),
+  ]);
 
   logger.log('Done');
 

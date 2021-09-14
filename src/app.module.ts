@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './common/config/configuration';
 import { validation } from './common/config/validation';
 import { SchemaModule } from './schema/schema.module';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -16,5 +17,6 @@ import { SchemaModule } from './schema/schema.module';
     HttpModule,
     SchemaModule,
   ],
+  providers: [AppService],
 })
 export class AppModule {}

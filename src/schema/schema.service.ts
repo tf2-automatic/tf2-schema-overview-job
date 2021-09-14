@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Config, Services } from '../common/config/configuration';
+import { Effect } from './interfaces/effect.interface';
 import { Quality } from './interfaces/quality.interface';
 
 @Injectable()
@@ -35,6 +36,18 @@ export class SchemaService {
     await this.httpService
       .post<any>(url, {
         qualities,
+      })
+      .toPromise();
+  }
+
+  async saveEffects(effects: Effect[]): Promise<void> {
+    const url = `${
+      this.configService.get<Services>('services').tf2Schema
+    }/effects`;
+
+    await this.httpService
+      .post<any>(url, {
+        effects,
       })
       .toPromise();
   }
